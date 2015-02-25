@@ -6,9 +6,9 @@ package vinay.gaba.snappy;
 public class UsernamesHolder {
     String username,add;
 
-    public UsernamesHolder(String username){
+    public UsernamesHolder(String username,String add){
         this.username = username;
-     //   this.add = add;
+        this.add = add;
     }
 
     public String getUsername() {

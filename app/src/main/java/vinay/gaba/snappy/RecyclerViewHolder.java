@@ -10,13 +10,13 @@ import android.widget.TextView;
 public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
 
-    public TextView username;
+    public TextView username,add;
 
 
     public RecyclerViewHolder(View itemView) {
         super(itemView);
        username = (TextView) itemView.findViewById(R.id.usernameTextView);
-        //add = (TextView) itemView.findViewById(R.id.addTextView);
+        add = (TextView) itemView.findViewById(R.id.addTextView);
 
 
 

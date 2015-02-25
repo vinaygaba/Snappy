@@ -50,9 +50,14 @@ public class CustomRecyclerAdapter
 
     @Override
     public void onBindViewHolder(RecyclerViewHolder viewHolder, int position) {
+
         viewHolder.username.setText(mData.get(position).getUsername());
+
        // viewHolder.add.setText(mData.get(position).getAdd());
        // viewHolder.inapp.setText(mData.get(position).getIn_app());
         //viewHolder.icon.setBackgroundColor(Color.parseColor(mData.get(position).color));
     }
+
+
+
 }

@@ -24,7 +24,7 @@
 
 
 
-    <!-- Release Year -->
+
     <TextView
         android:id="@+id/addTextView"
         android:layout_width="wrap_content"
