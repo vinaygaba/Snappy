@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,6 +57,7 @@ public class LoginActivity extends ActionBarActivity {
                             startActivity(intent);
                         } else {
                             // Login failed. Look at the ParseException to see what happened.
+                            Log.e("Error", e.getMessage());
                             Crouton.makeText(LoginActivity.this, "Login attempt failed!", Style.ALERT).show();
                         }
                     }

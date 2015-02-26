@@ -20,12 +20,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        fab:fab_icon="@drawable/ic_action_camera"
+        fab:fab_icon="@drawable/ic_send_white"
         fab:fab_colorNormal="#FFEB3B"
         fab:fab_colorPressed="#fff59e"
         android:layout_alignBottom="@+id/pager"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="16dp"/>
+        />
 
 </RelativeLayout>
 

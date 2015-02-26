@@ -3,6 +3,8 @@ package vinay.gaba.snappy;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +15,14 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.parse.DeleteCallback;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseRelation;
+import com.parse.ParseUser;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,26 +31,12 @@ import java.util.List;
 public class FriendsFragment extends Fragment {
 
     private static final int HIGHLIGHT_COLOR = 0x999be6ff;
-
-    // list of data items
-    private List<ListData> mDataList = Arrays.asList(
-            new ListData("Iron Man"),
-            new ListData("Captain America"),
-            new ListData("James Bond"),
-            new ListData("Harry Potter"),
-            new ListData("Sherlock Holmes"),
-            new ListData("Black Widow"),
-            new ListData("Hawk Eye"),
-            new ListData("Iron Man"),
-            new ListData("Guava"),
-            new ListData("Tomato"),
-            new ListData("Pineapple"),
-            new ListData("Strawberry"),
-            new ListData("Watermelon"),
-            new ListData("Pears"),
-            new ListData("Kiwi"),
-            new ListData("Plums")
-    );
+    public static String TAG_FRIEND = "Friend";
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    ParseUser currentUser;
+    ParseRelation<ParseUser> parseRelation;
+    List<ListData> friendsList =  new ArrayList<ListData>();
+    ListAdapter mAdapter = new ListAdapter();
 
     // declare the color generator and drawable builder
     private ColorGenerator mColorGenerator = ColorGenerator.MATERIAL;
@@ -56,23 +50,105 @@ public class FriendsFragment extends Fragment {
                 .round();
         // init the list view and its adapter
         ListView listView = (ListView) rootView.findViewById(R.id.listView);
-        listView.setAdapter(new SampleAdapter());
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.activity_main_swipe_refresh_layout);
+        listView.setAdapter(mAdapter);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.blue_normal,R.color.snappy_yellow);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshContent();
+
+            }
+                });
+
+        currentUser = ParseUser.getCurrentUser();
+
+        if( currentUser != null) {
+            parseRelation = currentUser.getRelation(TAG_FRIEND);
+
+        //    parseRelation.getQuery().setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+            parseRelation.getQuery().fromPin("FRIENDS_LIST");
+            parseRelation.getQuery().addAscendingOrder("username");
+            parseRelation.getQuery().findInBackground(new FindCallback<ParseUser>() {
+                @Override
+                public void done(List<ParseUser> parseUsers, ParseException e) {
+                    if(e!=null){
+
+                    }
+                    else {
+                        if (parseUsers.size() == 0) {
+                            Log.e("No", "Friends");
+                        } else {
+
+                            for (ParseUser friend : parseUsers) {
+
+                                ListData listData = new ListData(friend.getUsername());
+                                friendsList.add(listData);
+                            }
+                        }
+                        mAdapter.notifyDataSetChanged();
+
+                        // Add the latest results for this query to the cache.
+                        ParseObject.pinAllInBackground("FRIENDS_LIST", parseUsers);
+                    }
+
+                }
+            });
+
+        }
+
         return rootView;
     }
 
 
+    public void refreshContent(){
+       // parseRelation.getQuery().setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
+        parseRelation.getQuery().addAscendingOrder("username");
+        parseRelation.getQuery().findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(final List<ParseUser> parseUsers, ParseException e) {
+                if (e == null) {
+                    friendsList.clear();
+                    for (ParseUser friend : parseUsers) {
+                        ListData listData = new ListData(friend.getUsername());
+                        friendsList.add(listData);
+                    }
+                    mAdapter.notifyDataSetChanged();
+                    mSwipeRefreshLayout.setRefreshing(false);
 
 
-    private class SampleAdapter extends BaseAdapter {
+                    // Release any objects previously pinned for this query.
+                    ParseObject.unpinAllInBackground("FRIENDS_LIST", parseUsers, new DeleteCallback() {
+                        public void done(ParseException e) {
+                            if (e != null) {
+                                // There was some error.
+                                return;
+                            }
+
+                            // Add the latest results for this query to the cache.
+                            ParseObject.pinAllInBackground("FRIENDS_LIST", parseUsers);
+                        }
+                    });
+
+
+                }
+            }
+
+        });
+    }
+
+
+
+    private class ListAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
-            return mDataList.size();
+            return friendsList.size();
         }
 
         @Override
         public ListData getItem(int position) {
-            return mDataList.get(position);
+            return friendsList.get(position);
         }
 
         @Override
@@ -104,7 +180,7 @@ public class FriendsFragment extends Fragment {
                 }
             });
             holder.friendName.setText(item.data);
-            TextDrawable drawable = mDrawableBuilder.build(String.valueOf(item.data.charAt(0)), mColorGenerator.getColor(item.data));
+            TextDrawable drawable = mDrawableBuilder.build(String.valueOf(item.data.charAt(0)).toUpperCase(), mColorGenerator.getColor(item.data.charAt(0)));
             holder.imageView.setImageDrawable(drawable);
             holder.view.setBackgroundColor(Color.TRANSPARENT);
 
