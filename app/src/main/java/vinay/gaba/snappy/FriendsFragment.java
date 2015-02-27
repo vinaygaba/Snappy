@@ -67,8 +67,10 @@ public class FriendsFragment extends Fragment {
             parseRelation = currentUser.getRelation(TAG_FRIEND);
 
         //    parseRelation.getQuery().setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+
             parseRelation.getQuery().fromPin("FRIENDS_LIST");
-            parseRelation.getQuery().addAscendingOrder("username");
+
+            parseRelation.getQuery().orderByAscending("username");
             parseRelation.getQuery().findInBackground(new FindCallback<ParseUser>() {
                 @Override
                 public void done(List<ParseUser> parseUsers, ParseException e) {
@@ -103,7 +105,7 @@ public class FriendsFragment extends Fragment {
 
     public void refreshContent(){
        // parseRelation.getQuery().setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
-        parseRelation.getQuery().addAscendingOrder("username");
+        parseRelation.getQuery().orderByAscending("username");
         parseRelation.getQuery().findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(final List<ParseUser> parseUsers, ParseException e) {
