@@ -57,6 +57,9 @@ public class LoginActivity extends ActionBarActivity {
                             startActivity(intent);
                         } else {
                             // Login failed. Look at the ParseException to see what happened.
+                            if(btnLogIn.getProgress() == 1){
+                                btnLogIn.setProgress(0);
+                            }
                             Log.e("Error", e.getMessage());
                             Crouton.makeText(LoginActivity.this, "Login attempt failed!", Style.ALERT).show();
                         }

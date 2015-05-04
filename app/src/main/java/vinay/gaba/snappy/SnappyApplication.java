@@ -15,7 +15,8 @@ public class SnappyApplication extends Application {
         // Enable Local Datastore.
         Parse.enableLocalDatastore(this);
 
-        Parse.initialize(this, "server_key", "client_key");
+        Parse.initialize(this, "key", "key");
+
 
 
     }

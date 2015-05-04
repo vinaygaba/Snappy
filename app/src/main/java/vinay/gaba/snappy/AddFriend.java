@@ -81,7 +81,7 @@ public class AddFriend extends ActionBarActivity {
         parseRelation = currentUser.getRelation(TAG_FRIEND);
 
         ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.whereStartsWith("username", "vinay");
+        query.whereStartsWith("username", "abc");
         query.whereNotEqualTo("username", currentUser.getUsername());
 
 
